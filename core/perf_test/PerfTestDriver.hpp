@@ -148,5 +148,60 @@ void run_test_gramschmidt( int exp_beg , int exp_end, const char deviceTypeName[
   }
 }
 
+template< class DeviceType >
+void run_test_teambarrier( const int exp_beg, 
+                           const int exp_end, 
+                           const int exp_task, 
+                           const int max_team_size, 
+                           const char deviceTypeName[] )
+{
+  std::string label_teambarrier;
+
+  label_teambarrier.append( "\"TeamBarrier< double , " );
+  label_teambarrier.append( deviceTypeName );
+  label_teambarrier.append( " >\"" );
+
+  const int iteration = 1;
+  for (int team_size = 1 ; team_size < max_team_size ; team_size <<= 1 ) {  
+    for (int i = exp_beg ; i < exp_end ; ++i) {
+      double min_seconds = 0.0 ;
+      double max_seconds = 0.0 ;
+      double avg_seconds = 0.0 ;
+
+      const int parallel_work_length = 1<<i;
+      const int work_length_per_task = 1<<exp_task;
+
+      for ( int j = 0 ; j < NUMBER_OF_TRIALS ; ++j ) {
+        
+        const double without_barrier = TeamBarrier< double , DeviceType , false >
+          ::test( parallel_work_length, work_length_per_task, team_size, iteration ) ;
+
+        const double with_barrier    = TeamBarrier< double , DeviceType , true >
+          ::test( parallel_work_length, work_length_per_task, team_size, iteration ) ;
+        
+        const double seconds = with_barrier - without_barrier;
+        if ( 0 == j ) {
+          min_seconds = seconds ;
+          max_seconds = seconds ;
+        }
+        else {
+          if ( seconds < min_seconds ) min_seconds = seconds ;
+          if ( seconds > max_seconds ) max_seconds = seconds ;
+        }
+        avg_seconds += seconds ;
+      }
+      avg_seconds /= NUMBER_OF_TRIALS ;
+      
+      std::cout << label_teambarrier
+                << " , " << team_size
+                << " , " << parallel_work_length
+                << " , " << min_seconds
+                << " , " << ( min_seconds / parallel_work_length )
+                << std::endl ;
+    }
+  }
 }
+
+}
+
 

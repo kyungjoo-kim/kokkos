@@ -45,20 +45,27 @@
 
 #include <Kokkos_Core.hpp>
 
+// When multiple device spaces are activated, we still need to identify 
+// which execution space is used for testing. Some experimental features
+// implemented on a certain device only.
+
 #if defined( KOKKOS_HAVE_OPENMP )
 
 typedef Kokkos::OpenMP TestHostDevice ;
 const char TestHostDeviceName[] = "Kokkos::OpenMP" ;
+#define PERF_TEST_SELECT_OPENMP
 
 #elif defined( KOKKOS_HAVE_PTHREAD )
 
 typedef Kokkos::Threads TestHostDevice ;
 const char TestHostDeviceName[] = "Kokkos::Threads" ;
+#define PERF_TEST_SELECT_THREADS
 
 #elif defined( KOKKOS_HAVE_SERIAL )
 
 typedef Kokkos::Serial TestHostDevice ;
 const char TestHostDeviceName[] = "Kokkos::Serial" ;
+#define PERF_TEST_SELECT_SERIAL
 
 #else
 #  error "You must enable at least one of the following execution spaces in order to build this test: Kokkos::Threads, Kokkos::OpenMP, or Kokkos::Serial."
@@ -69,6 +76,12 @@ const char TestHostDeviceName[] = "Kokkos::Serial" ;
 #include <PerfTestHexGrad.hpp>
 #include <PerfTestBlasKernels.hpp>
 #include <PerfTestGramSchmidt.hpp>
+#if defined( PERF_TEST_SELECT_THREADS ) || defined( PERF_TEST_SELECT_SERIAL )
+#include <Kokkos_Threads.hpp>
+#include <Threads/Kokkos_Threads_TaskPolicy.hpp>
+#include <impl/Kokkos_Serial_TaskPolicy.hpp>
+#include <PerfTestTeamBarrier.hpp>
+#endif
 #include <PerfTestDriver.hpp>
 
 //------------------------------------------------------------------------
@@ -98,6 +111,12 @@ TEST_F( host, hexgrad ) {
 TEST_F( host, gramschmidt ) {
   EXPECT_NO_THROW(run_test_gramschmidt< TestHostDevice>( 10, 20, TestHostDeviceName ));
 }
+
+#if defined( PERF_TEST_SELECT_THREADS ) || defined( PERF_TEST_SELECT_SERIAL )
+TEST_F( host, teambarrier ) {
+  EXPECT_NO_THROW(run_test_teambarrier< TestHostDevice>( 10, 20, 5, 8, TestHostDeviceName ));
+}
+#endif
 
 } // namespace Test
 
