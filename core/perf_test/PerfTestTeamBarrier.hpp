@@ -113,12 +113,12 @@ namespace Test {
 
       typedef TaskTeamFunctor<scalar_type,execution_space,ApplyTeamBarrier> functor_type;
       typedef Kokkos::View<scalar_type*,execution_space> scalar_type_array;
-      std::cout << " my test " << std::endl;
+
       scalar_type_array a("a", nwork), b("b", nwork);
 
       const size_t ntasks = (nwork/nwork_per_task + 1);
       policy_type policy(ntasks*2,
-                         sizeof(functor_type) + 512,
+                         (sizeof(functor_type) + 128)/128*128,
                          0, team_size);
       
       double dt_min = 0;

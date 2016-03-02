@@ -76,12 +76,14 @@ const char TestHostDeviceName[] = "Kokkos::Serial" ;
 #include <PerfTestHexGrad.hpp>
 #include <PerfTestBlasKernels.hpp>
 #include <PerfTestGramSchmidt.hpp>
+
 #if defined( PERF_TEST_SELECT_THREADS ) || defined( PERF_TEST_SELECT_SERIAL )
 #include <Kokkos_Threads.hpp>
 #include <Threads/Kokkos_Threads_TaskPolicy.hpp>
 #include <impl/Kokkos_Serial_TaskPolicy.hpp>
 #include <PerfTestTeamBarrier.hpp>
 #endif
+
 #include <PerfTestDriver.hpp>
 
 //------------------------------------------------------------------------
@@ -114,7 +116,7 @@ TEST_F( host, gramschmidt ) {
 
 #if defined( PERF_TEST_SELECT_THREADS ) || defined( PERF_TEST_SELECT_SERIAL )
 TEST_F( host, teambarrier ) {
-  EXPECT_NO_THROW(run_test_teambarrier< TestHostDevice>( 10, 20, 5, 8, TestHostDeviceName ));
+  EXPECT_NO_THROW(run_test_teambarrier< TestHostDevice>( 10, 20, 10, TestHostDeviceName ));
 }
 #endif
 
