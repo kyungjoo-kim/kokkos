@@ -77,6 +77,16 @@ namespace Test {
 
     KOKKOS_INLINE_FUNCTION
     void apply(value_type & r_val) {
+      const auto range = a.dimension(0);
+      for (auto iter=0;iter<Big;++iter) {
+        for (auto i=0;i<range;++i) {
+          b(i) = itask*range + i;
+          scalar_type tmp = range*itask;
+          for (auto j=0;j<Small;++j)
+            tmp += j;
+          a(i) = b(i) + tmp;
+        }
+      }
       r_val = 0;
     }
     
@@ -95,6 +105,7 @@ namespace Test {
         if (ApplyTeamBarrier)
           member.team_barrier();
       }
+      r_val = 0;
     }
   };
 
@@ -117,8 +128,9 @@ namespace Test {
       scalar_type_array a("a", nwork), b("b", nwork);
 
       const size_t ntasks = (nwork/nwork_per_task + 1);
+
       policy_type policy(ntasks*2,
-                         (sizeof(functor_type) + 128)/128*128,
+                         (sizeof(functor_type) + 256)/128*128,
                          0, team_size);
       
       double dt_min = 0;
@@ -134,6 +146,7 @@ namespace Test {
           auto aa = Kokkos::subview(a, Kokkos::pair<int,int>(begin,end));
           auto bb = Kokkos::subview(b, Kokkos::pair<int,int>(begin,end));
           
+          //future_type f = policy.proc_create(functor_type(itask, aa, bb), 0);
           future_type f = policy.proc_create_team(functor_type(itask, aa, bb), 0);
           policy.spawn( f );
 

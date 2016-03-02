@@ -162,7 +162,6 @@ void run_test_teambarrier( const int exp_beg,
 
   const int iteration = 1;
   const int max_team_size = Kokkos::hwloc::get_available_threads_per_core();
-
   for (int team_size = 1 ; team_size <= max_team_size ; team_size <<= 1 ) {  
     for (int i = exp_beg ; i < exp_end ; ++i) {
       double min_seconds = 0.0 ;
@@ -191,6 +190,7 @@ void run_test_teambarrier( const int exp_beg,
       
       std::cout << label_teambarrier
                 << " , " << team_size
+                << " , " << max_team_size
                 << " , " << parallel_work_length
                 << " , " << min_seconds
                 << " , " << ( min_seconds / parallel_work_length )

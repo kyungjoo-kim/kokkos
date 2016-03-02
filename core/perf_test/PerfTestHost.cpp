@@ -94,10 +94,13 @@ class host : public ::testing::Test {
 protected:
   static void SetUpTestCase()
   {
-    const unsigned team_count = Kokkos::hwloc::get_available_numa_count();
-    const unsigned threads_per_team = 4 ;
+    const unsigned numa_count = Kokkos::hwloc::get_available_numa_count();
+    const unsigned cores_per_numa = Kokkos::hwloc::get_available_cores_per_numa();
+    const unsigned threads_per_core = Kokkos::hwloc::get_available_threads_per_core();
+    const unsigned threads_count = numa_count * cores_per_numa * threads_per_core;
 
-    TestHostDevice::initialize( team_count * threads_per_team );
+    TestHostDevice::initialize( threads_count, numa_count, cores_per_numa );
+    TestHostDevice::print_configuration( std::cout, true );
   }
 
   static void TearDownTestCase()
