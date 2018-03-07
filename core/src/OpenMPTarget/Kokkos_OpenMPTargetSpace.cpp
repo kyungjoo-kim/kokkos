@@ -105,6 +105,7 @@ SharedAllocationRecord< Kokkos::Experimental::OpenMPTargetSpace , void >::s_root
 SharedAllocationRecord< Kokkos::Experimental::OpenMPTargetSpace , void >::
 ~SharedAllocationRecord()
 {
+  m_space.deallocate_tracked_all();
   m_space.deallocate( SharedAllocationRecord< void , void >::m_alloc_ptr
                     , SharedAllocationRecord< void , void >::m_alloc_size
                     );
@@ -226,6 +227,13 @@ print_records( std::ostream & s , const Kokkos::Experimental::OpenMPTargetSpace 
 {
   SharedAllocationRecord< void , void >::print_host_accessible_records( s , "OpenMPTargetSpace" , & s_root_record , detail );
 }
+
+void SharedAllocationRecord< Kokkos::Experimental::OpenMPTargetSpace , void >::
+deallocate_tracked_all( const Kokkos::Experimental::OpenMPTargetSpace & )
+{
+  SharedAllocationRecord< void , void >::deallocate_tracked_all_memory( & s_root_record );
+}
+
 
 } // namespace Impl
 } // namespace Kokkos

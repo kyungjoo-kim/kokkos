@@ -321,6 +321,21 @@ print_host_accessible_records( std::ostream & s
   }
 }
 
+void
+SharedAllocationRecord< void , void >::
+deallocate_tracked_all_memory( const SharedAllocationRecord * const root )
+{
+  // circular double linked list
+  SharedAllocationRecord * last = root->m_prev;
+  
+  // pop allocated memory from the last until it reaches the root
+  do { 
+    // decrease until the memory is deallocated
+    for (;last->m_alloc_ptr;) 
+      last = decrement( last );
+  } while ( last != root );
+}
+
 } /* namespace Impl */
 } /* namespace Kokkos */
 

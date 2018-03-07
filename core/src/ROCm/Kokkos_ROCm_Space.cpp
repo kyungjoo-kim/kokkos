@@ -306,6 +306,7 @@ SharedAllocationRecord< Kokkos::Experimental::ROCmSpace , void >::
   }
   #endif
 
+  m_space.deallocate_tracked_all();
   m_space.deallocate( SharedAllocationRecord< void , void >::m_alloc_ptr
                     , SharedAllocationRecord< void , void >::m_alloc_size
                     );
@@ -322,6 +323,7 @@ SharedAllocationRecord< Kokkos::Experimental::ROCmHostPinnedSpace , void >::
   }
   #endif
 
+  m_space.deallocate_tracked_all();
   m_space.deallocate( SharedAllocationRecord< void , void >::m_alloc_ptr
                     , SharedAllocationRecord< void , void >::m_alloc_size
                     );
@@ -614,12 +616,24 @@ print_records( std::ostream & s , const Kokkos::Experimental::ROCmSpace & space 
     } while ( r != & s_root_record );
   }
 }
+
+void SharedAllocationRecord< Kokkos::Experimental::ROCmSpace , void >::
+deallocate_tracked_all( const Kokkos::Experimental::ROCmSpace & )
+{
+  SharedAllocationRecord< void , void >::deallocate_tracked_all_memory( & s_root_record );
+}
+
 #if 0
 void
 SharedAllocationRecord< Kokkos::Experimental::ROCmHostPinnedSpace , void >::
 print_records( std::ostream & s , const Kokkos::Experimental::ROCmHostPinnedSpace & space , bool detail )
 {
   SharedAllocationRecord< void , void >::print_host_accessible_records( s , "ROCmHostPinned" , & s_root_record , detail );
+}
+void SharedAllocationRecord< Kokkos::Experimental::ROCmHostPinnedSpace , void >::
+deallocate_tracked_all( const Kokkos::Experimental::ROCmHostPinnedSpace & )
+{
+  SharedAllocationRecord< void , void >::deallocate_tracked_all_memory( & s_root_record );
 }
 #endif 
 

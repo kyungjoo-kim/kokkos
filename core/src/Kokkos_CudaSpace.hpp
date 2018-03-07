@@ -788,6 +788,7 @@ public:
     }
 
   static void print_records( std::ostream & , const Kokkos::CudaSpace & , bool detail = false );
+  static void deallocate_tracked_all( const Kokkos::CudaSpace & );
 };
 
 

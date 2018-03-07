@@ -196,6 +196,7 @@ SharedAllocationRecord< Kokkos::Experimental::HBWSpace , void >::
   }
   #endif
 
+  m_space.deallocate_tracked_all();
   m_space.deallocate( SharedAllocationRecord< void , void >::m_alloc_ptr
                     , SharedAllocationRecord< void , void >::m_alloc_size
                     );
@@ -296,6 +297,12 @@ void SharedAllocationRecord< Kokkos::Experimental::HBWSpace , void >::
 print_records( std::ostream & s , const Kokkos::Experimental::HBWSpace & space , bool detail )
 {
   SharedAllocationRecord< void , void >::print_host_accessible_records( s , "HBWSpace" , & s_root_record , detail );
+}
+
+void SharedAllocationRecord< Kokkos::Experimental::HBWSpace , void >::
+deallocate_tracked_all( const Kokkos::Experimental::HBWSpace & )
+{
+  SharedAllocationRecord< void , void >::deallocate_tracked_all_memory( & s_root_record );
 }
 
 } // namespace Impl

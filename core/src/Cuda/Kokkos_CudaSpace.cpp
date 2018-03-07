@@ -378,6 +378,7 @@ SharedAllocationRecord< Kokkos::CudaSpace , void >::
   }
   #endif
 
+  m_space.deallocate_tracked_all();
   m_space.deallocate( SharedAllocationRecord< void , void >::m_alloc_ptr
                     , SharedAllocationRecord< void , void >::m_alloc_size
                     );
@@ -395,6 +396,7 @@ SharedAllocationRecord< Kokkos::CudaUVMSpace , void >::
   }
   #endif
 
+  m_space.deallocate_tracked_all();
   m_space.deallocate( SharedAllocationRecord< void , void >::m_alloc_ptr
                     , SharedAllocationRecord< void , void >::m_alloc_size
                     );
@@ -411,6 +413,7 @@ SharedAllocationRecord< Kokkos::CudaHostPinnedSpace , void >::
   }
   #endif
 
+  m_space.deallocate_tracked_all();
   m_space.deallocate( SharedAllocationRecord< void , void >::m_alloc_ptr
                     , SharedAllocationRecord< void , void >::m_alloc_size
                     );
@@ -803,6 +806,27 @@ SharedAllocationRecord< Kokkos::CudaHostPinnedSpace , void >::
 print_records( std::ostream & s , const Kokkos::CudaHostPinnedSpace & , bool detail )
 {
   SharedAllocationRecord< void , void >::print_host_accessible_records( s , "CudaHostPinned" , & s_root_record , detail );
+}
+
+void
+SharedAllocationRecord< Kokkos::CudaSpace , void >::
+deallocate_tracked_all( const Kokkos::CudaSpace &  )
+{
+  SharedAllocationRecord< void , void >::deallocate_tracked_all_memory( & s_root_record );
+}
+
+void
+SharedAllocationRecord< Kokkos::CudaUVMSpace , void >::
+deallocate_tracked_all( const Kokkos::CudaUVMSpace &  )
+{
+  SharedAllocationRecord< void , void >::deallocate_tracked_all_memory( & s_root_record );
+}
+
+void
+SharedAllocationRecord< Kokkos::CudaHostPinnedSpace , void >::
+deallocate_tracked_all( const Kokkos::CudaHostPinnedSpace &  )
+{
+  SharedAllocationRecord< void , void >::deallocate_tracked_all_memory( & s_root_record );
 }
 
 void* cuda_resize_scratch_space(std::int64_t bytes, bool force_shrink) {

@@ -318,6 +318,7 @@ SharedAllocationRecord< Kokkos::HostSpace , void >::
   }
   #endif
 
+  m_space.deallocate_tracked_all();
   m_space.deallocate( SharedAllocationRecord< void , void >::m_alloc_ptr
                     , SharedAllocationRecord< void , void >::m_alloc_size
                     );
@@ -417,6 +418,12 @@ void SharedAllocationRecord< Kokkos::HostSpace , void >::
 print_records( std::ostream & s , const Kokkos::HostSpace & , bool detail )
 {
   SharedAllocationRecord< void , void >::print_host_accessible_records( s , "HostSpace" , & s_root_record , detail );
+}
+
+void SharedAllocationRecord< Kokkos::HostSpace , void >::
+deallocate_tracked_all( const Kokkos::HostSpace & )
+{
+  SharedAllocationRecord< void , void >::deallocate_tracked_all_memory( & s_root_record );
 }
 
 } // namespace Impl

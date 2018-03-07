@@ -553,6 +553,7 @@ public:
   static SharedAllocationRecord * get_record( void * arg_alloc_ptr );
 
   static void print_records( std::ostream & , const Kokkos::Experimental::ROCmSpace & , bool detail = false );
+  static void deallocate_tracked_all( const Kokkos::Experimental::ROCmSpace & );
 };
 
 template<>

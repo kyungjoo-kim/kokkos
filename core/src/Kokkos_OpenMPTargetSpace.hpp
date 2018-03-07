@@ -202,6 +202,7 @@ public:
   static SharedAllocationRecord * get_record( void * arg_alloc_ptr );
 
   static void print_records( std::ostream & , const Kokkos::Experimental::OpenMPTargetSpace & , bool detail = false );
+  static void deallocate_tracked_all( const Kokkos::Experimental::OpenMPTargetSpace & );
 };
 
 } // namespace Impl
